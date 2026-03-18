@@ -8,6 +8,7 @@ const EmployeeForm = ({ refresh }) => {
     email: "",
     phone: "",
     department: "",
+    designation: "",
     role: "",
     joiningDate: "",
   });
