@@ -28,6 +28,7 @@ const EmployeeForm = ({ refresh }) => {
         email: "",
         phone: "",
         department: "",
+        designation: "",
         role: "",
         joiningDate: "",
       });
@@ -87,11 +88,18 @@ const EmployeeForm = ({ refresh }) => {
 
       <input
         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-        name="role"
-        placeholder="Role"
-        value={form.role}
+        name="designation"
+        placeholder="Designation"
+        value={form.designation}
         onChange={handleChange}
       />
+
+      <select name="role" value={form.role} onChange={handleChange}>
+        <option value="">Select Role</option>
+        <option value="EMPLOYEE">Employee</option>
+        <option value="MANAGER">Manager</option>
+        <option value="HR_ADMIN">HR Admin</option>
+      </select>
 
       <input
         type="date"

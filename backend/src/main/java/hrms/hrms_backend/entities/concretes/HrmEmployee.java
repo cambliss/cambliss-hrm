@@ -2,6 +2,7 @@ package hrms.hrms_backend.entities.concretes;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import hrms.hrms_backend.entities.enums.EmploymentStatus;
+import hrms.hrms_backend.entities.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,14 +39,22 @@ public class HrmEmployee {
     @Column(unique = true)
     private String email;
 
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    private boolean passwordChanged = false;
+
     @NotBlank(message = "Phone number is required")
     private String phone;
 
     @NotBlank(message = "Department is required")
     private String department;
 
-    @NotBlank(message = "Role is required")
-    private String role;
+    @NotBlank(message = "Designation is required")
+    private String designation;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @NotNull(message = "Joining date is required")
     @JsonFormat(pattern = "yyyy-MM-dd")
