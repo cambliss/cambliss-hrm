@@ -39,7 +39,6 @@ public class HrmEmployee {
     @Column(unique = true)
     private String email;
 
-    @NotBlank(message = "Password is required")
     private String password;
 
     private boolean passwordChanged = false;
