@@ -7,6 +7,7 @@ import hrms.hrms_backend.dataacceess.abstracts.HrmEmployeeRepository;
 import hrms.hrms_backend.entities.concretes.HrmEmployee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class HrmEmployeeController {
         this.hrmEmployeeRepository = hrmEmployeeRepository;
     }
 
+    @PreAuthorize("hasAuthority('HR_ADMIN') or hasAuthority('SUPER_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<?> addEmployee(@Valid @RequestBody HrmEmployee employee) {
         try {
@@ -38,12 +40,14 @@ public class HrmEmployeeController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('HR_ADMIN','SUPER_ADMIN')")
     @GetMapping("/get")
     public List<HrmEmployee> getAllEmployees() {
         return hrmEmployeeService.getAllEmployees();
     }
 
-    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('HR_ADMIN') or hasAuthority('SUPER_ADMIN')")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> updateEmployee(
             @PathVariable Long id,
             @RequestBody HrmEmployee employee) {
