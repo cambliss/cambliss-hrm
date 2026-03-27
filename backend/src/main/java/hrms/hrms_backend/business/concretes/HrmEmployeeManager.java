@@ -36,6 +36,9 @@ public class HrmEmployeeManager implements HrmEmployeeService {
 
         employee.setEmploymentStatus(EmploymentStatus.ACTIVE);
 
+        employee.setPassword("Temp@123");
+        employee.setPasswordChanged(false);
+
         HrmEmployee savedEmployee = hrmEmployeeRepository.save(employee);
 
         LeaveBalance leaveBalance = new LeaveBalance();
@@ -65,6 +68,7 @@ public class HrmEmployeeManager implements HrmEmployeeService {
         existingEmployee.setLastName(updatedEmployee.getLastName());
         existingEmployee.setPhone(updatedEmployee.getPhone());
         existingEmployee.setDepartment(updatedEmployee.getDepartment());
+        existingEmployee.setDesignation(updatedEmployee.getDesignation());
         existingEmployee.setRole(updatedEmployee.getRole());
 
         if (updatedEmployee.getEmploymentStatus() != null) {
