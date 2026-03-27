@@ -5,6 +5,7 @@ import hrms.hrms_backend.dataacceess.abstracts.AttendanceRepository;
 import hrms.hrms_backend.entities.concretes.Attendance;
 import hrms.hrms_backend.entities.enums.AttendanceStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +35,8 @@ public class AttendanceController {
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/{employeeId}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','HR_ADMIN','MANAGER','EMPLOYEE')")
+    @GetMapping("/attendance/{employeeId}")
     public ResponseEntity<?> getAttendance(@PathVariable Long employeeId) {
         return ResponseEntity.ok(
                 attendanceService.getAttendanceByEmployee(employeeId)
