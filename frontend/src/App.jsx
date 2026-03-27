@@ -7,12 +7,25 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { ROLES } from "./config/roles";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profie";
+import Login from "./pages/Login";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<MainLayout />}>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+
+        {/* Protected routes */}
+        <Route 
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="/"
             element={

@@ -8,6 +8,7 @@ const EmployeeTable = ({ employees, onEdit }) => {
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Department</th>
+          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Designation</th>
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
@@ -26,6 +27,7 @@ const EmployeeTable = ({ employees, onEdit }) => {
             </td>
             <td className="px-4 py-3 text-gray-700">{emp.email}</td>
             <td className="px-4 py-3 text-gray-700">{emp.department}</td>
+            <td className="px-4 py-3 text-gray-700">{emp.designation}</td>
             <td className="px-4 py-3 text-gray-700">{emp.role}</td>
 
             <td className="px-4 py-3 text-gray-700">

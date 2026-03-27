@@ -1,10 +1,16 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ROLE_PERMISSIONS } from "../config/roles";
 import { ROLES } from "../config/roles";
 
 const MainLayout = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   const permissions = ROLE_PERMISSIONS[user.role];
 
   return (
@@ -82,9 +88,19 @@ const MainLayout = () => {
             </NavLink>
           )}
 
-          <span className="ml-auto text-sm text-gray-600">
-            {user.role}
-          </span>
+          <div className="ml-auto flex items-center gap-4">
+            <span className="text-sm text-gray-600">{user.role}</span>
+
+            <button
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+              className="px-3 py-1 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 

@@ -8,6 +8,7 @@ const EmployeeEditForm = ({ employee, onClose, refresh }) => {
     lastName: employee.lastName,
     phone: employee.phone,
     department: employee.department,
+    designation: employee.designation,
     role: employee.role,
     employmentStatus: employee.employmentStatus,
   });
@@ -133,18 +134,34 @@ const EmployeeEditForm = ({ employee, onClose, refresh }) => {
             </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Designation
+            </label>
+            <input
+              name="designation"
+              value={form.designation}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
           {/* Role & Status */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Role
               </label>
-              <input
+              <select
                 name="role"
                 value={form.role}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
+              >
+                <option value="EMPLOYEE">Employee</option>
+                <option value="MANAGER">Manager</option>
+                <option value="HR_ADMIN">HR Admin</option>
+              </select>
             </div>
 
             <div>
