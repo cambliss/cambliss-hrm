@@ -1,12 +1,15 @@
 package hrms.hrms_backend.api.controllers;
 
 import hrms.hrms_backend.dataacceess.abstracts.HrmEmployeeRepository;
+import hrms.hrms_backend.dto.ChangePasswordRequest;
 import hrms.hrms_backend.dto.LoginRequest;
 import hrms.hrms_backend.dto.LoginResponse;
 import hrms.hrms_backend.entities.concretes.HrmEmployee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,5 +38,30 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+
+        Optional<HrmEmployee> optionalUser = employeeRepository.findByEmail(request.getEmail());
+
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        HrmEmployee user = optionalUser.get();
+
+        // check old password
+        if (!user.getPassword().equals(request.getOldPassword())) {
+            return ResponseEntity.badRequest().body("Old password is incorrect");
+        }
+
+        // update password
+        user.setPassword(request.getNewPassword());
+        user.setPasswordChanged(true);
+
+        employeeRepository.save(user);
+
+        return ResponseEntity.ok("Password updated successfully");
     }
 }
