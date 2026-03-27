@@ -5,6 +5,7 @@ import hrms.hrms_backend.dto.ChangePasswordRequest;
 import hrms.hrms_backend.dto.LoginRequest;
 import hrms.hrms_backend.dto.LoginResponse;
 import hrms.hrms_backend.entities.concretes.HrmEmployee;
+import hrms.hrms_backend.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,9 @@ public class AuthController {
     @Autowired
     private HrmEmployeeRepository employeeRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
@@ -26,15 +30,18 @@ public class AuthController {
 
         // TEMP password check (we will secure later)
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            return ResponseEntity.badRequest().body("Invalid credentials");
         }
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
         LoginResponse response = new LoginResponse(
                 user.getId(),
                 user.getFirstName() + " " + user.getLastName(),
                 user.getEmail(),
                 user.getRole().name(), // enum → string
-                user.isPasswordChanged()
+                user.isPasswordChanged(),
+                token
         );
 
         return ResponseEntity.ok(response);
