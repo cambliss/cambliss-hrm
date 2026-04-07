@@ -8,6 +8,7 @@ import hrms.hrms_backend.dataacceess.abstracts.LeaveBalanceRepository;
 import hrms.hrms_backend.entities.concretes.HrmEmployee;
 import hrms.hrms_backend.entities.concretes.LeaveBalance;
 import hrms.hrms_backend.entities.enums.EmploymentStatus;
+import hrms.hrms_backend.entities.enums.Role;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class HrmEmployeeManager implements HrmEmployeeService {
 
     @Override
     public List<HrmEmployee> getAllEmployees() {
-        return hrmEmployeeRepository.findAll();
+        return hrmEmployeeRepository.findByRoleIn(List.of(Role.EMPLOYEE, Role.MANAGER));
     }
 
     @Override
