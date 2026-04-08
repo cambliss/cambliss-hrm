@@ -47,10 +47,7 @@ const Leaves = () => {
     // MANAGER -> team only
     if (user.role === ROLES.MANAGER) {
       getAllEmployees().then(res => {
-        const team = res.data.filter(emp =>
-          user.teamEmployeeIds?.includes(emp.id)
-        );
-        setEmployees(team);
+        setEmployees(res.data);
       });
     }
   }, [user]);
