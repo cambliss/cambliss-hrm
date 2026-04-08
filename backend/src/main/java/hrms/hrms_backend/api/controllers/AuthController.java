@@ -41,7 +41,8 @@ public class AuthController {
                 user.getEmail(),
                 user.getRole().name(), // enum → string
                 user.isPasswordChanged(),
-                token
+                token,
+                user.getId()
         );
 
         return ResponseEntity.ok(response);

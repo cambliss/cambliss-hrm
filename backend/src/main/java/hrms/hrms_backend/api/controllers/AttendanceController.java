@@ -36,7 +36,7 @@ public class AttendanceController {
     }
 
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','HR_ADMIN','MANAGER','EMPLOYEE')")
-    @GetMapping("/attendance/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<?> getAttendance(@PathVariable Long employeeId) {
         return ResponseEntity.ok(
                 attendanceService.getAttendanceByEmployee(employeeId)

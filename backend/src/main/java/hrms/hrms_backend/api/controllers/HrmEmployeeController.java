@@ -40,7 +40,7 @@ public class HrmEmployeeController {
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('HR_ADMIN','SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('HR_ADMIN','SUPER_ADMIN','MANAGER')")
     @GetMapping("/get")
     public List<HrmEmployee> getAllEmployees() {
         return hrmEmployeeService.getAllEmployees();
