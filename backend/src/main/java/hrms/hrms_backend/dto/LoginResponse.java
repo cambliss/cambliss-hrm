@@ -14,4 +14,5 @@ public class LoginResponse {
     private String role;
     private boolean passwordChanged;
     private String token;
+    private Long employeeId;
 }
