@@ -33,12 +33,9 @@ const LeaveList = ({ leaves, refresh, employeeId }) => {
 
       <tbody>
         {leaves.map((l) => {
-          const isManagerOfEmployee =
-            user.role === ROLES.MANAGER &&
-            user.teamEmployeeIds?.includes(l.employee?.id);
+          const isManager = user.role === ROLES.MANAGER;
 
-          const canApprove =
-            isAdminOrHR || isManagerOfEmployee;
+          const canApprove = isAdminOrHR || isManager;
 
           return (
             <tr key={l.id} className="border-b hover:bg-gray-50 transition">
