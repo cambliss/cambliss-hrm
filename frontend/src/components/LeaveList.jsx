@@ -1,14 +1,15 @@
 import { approveLeave, rejectLeave } from "../api/leaveApi";
 import { useAuth } from "../context/AuthContext";
 import { ROLES } from "../config/roles";
+import toast from "react-hot-toast";
 
 const LeaveList = ({ leaves, refresh, employeeId }) => {
   const { user } = useAuth();
 
   if (!leaves.length) {
     return (
-      <div className="bg-white p-4 rounded shadow text-gray-500">
-        Select an employee to view leave requests
+      <div className="bg-white p-6 rounded-xl shadow-sm border text-center text-gray-400">
+        No leave requests found
       </div>
     );
   }
@@ -17,36 +18,56 @@ const LeaveList = ({ leaves, refresh, employeeId }) => {
     user.role === ROLES.SUPER_ADMIN ||
     user.role === ROLES.HR_ADMIN;
 
+  const isManager = user.role === ROLES.MANAGER;
+
+  const canApprove = isAdminOrHR || isManager;
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <table className="w-full text-sm">
-      <thead className="bg-gray-50 border-b">
-        <tr>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">From</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">To</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reason</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-        </tr>
-      </thead>
+    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
 
-      <tbody>
-        {leaves.map((l) => {
-          const isManager = user.role === ROLES.MANAGER;
+      <table className="w-full text-sm">
 
-          const canApprove = isAdminOrHR || isManager;
+        {/* HEADER */}
+        <thead className="bg-gray-50 border-b">
+          <tr className="text-gray-500 text-xs uppercase tracking-wider">
+            <th className="px-6 py-3 text-left">Type</th>
+            <th className="px-6 py-3 text-left">From</th>
+            <th className="px-6 py-3 text-left">To</th>
+            <th className="px-6 py-3 text-left">Reason</th>
+            <th className="px-6 py-3 text-left">Status</th>
+            <th className="px-6 py-3 text-left">Action</th>
+          </tr>
+        </thead>
 
-          return (
-            <tr key={l.id} className="border-b hover:bg-gray-50 transition">
-              <td className="px-4 py-3 text-gray-700">{l.leaveType}</td>
-              <td className="px-4 py-3 text-gray-700">{l.startDate}</td>
-              <td className="px-4 py-3 text-gray-700">{l.endDate}</td>
-              <td className="px-4 py-3 text-gray-700">
+        {/* BODY */}
+        <tbody>
+          {leaves.map((l) => (
+            <tr
+              key={l.id}
+              className="border-b hover:bg-gray-50 transition"
+            >
+
+              {/* TYPE */}
+              <td className="px-6 py-4 font-medium text-gray-800">
+                {l.leaveType}
+              </td>
+
+              {/* DATES */}
+              <td className="px-6 py-4 text-gray-600">
+                {l.startDate}
+              </td>
+
+              <td className="px-6 py-4 text-gray-600">
+                {l.endDate}
+              </td>
+
+              {/* REASON */}
+              <td className="px-6 py-4 text-gray-600">
                 {l.reason || "-"}
               </td>
 
-              <td className="px-4 py-3 text-gray-700">
+              {/* STATUS */}
+              <td className="px-6 py-4">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
                     l.status === "APPROVED"
@@ -60,40 +81,48 @@ const LeaveList = ({ leaves, refresh, employeeId }) => {
                 </span>
               </td>
 
-              <td className="px-4 py-3 text-gray-700">
+              {/* ACTION */}
+              <td className="px-6 py-4">
+
                 {canApprove && l.status === "PENDING" ? (
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
+
                     <button
-                      onClick={() =>
+                      onClick={() => {
                         approveLeave(l.id).then(() =>
                           refresh(employeeId)
-                        )
-                      }
+                        );
+                        toast.success("Approved");
+                      }}
                       className="px-3 py-1 text-xs font-medium bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition"
                     >
                       Approve
                     </button>
 
                     <button
-                      onClick={() =>
+                      onClick={() => {
                         rejectLeave(l.id).then(() =>
                           refresh(employeeId)
-                        )
-                      }
+                        );
+                        toast.error("Rejected");
+                      }}
                       className="px-3 py-1 text-xs font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
                     >
                       Reject
                     </button>
+
                   </div>
                 ) : (
                   <span className="text-gray-400 text-sm">—</span>
                 )}
+
               </td>
+
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </tbody>
+
+      </table>
     </div>
   );
 };
