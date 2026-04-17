@@ -1,34 +1,37 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ROLE_PERMISSIONS } from "../config/roles";
-import { ROLES } from "../config/roles";
+import { ROLE_PERMISSIONS, ROLES } from "../config/roles";
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  if (!user) return <div>Loading...</div>;
 
   const permissions = ROLE_PERMISSIONS[user.role];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex gap-8 items-center">
-          <h1 className="font-bold text-xl text-blue-600">
-            HRMS
-          </h1>
+    <div className="flex h-screen bg-gray-100">
+
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r shadow-sm flex flex-col">
+
+        <div className="p-6 text-xl font-bold text-blue-600 border-b">
+          HRMS
+        </div>
+
+        <nav className="flex-1 p-4 space-y-2">
 
           {permissions.employees && (
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                  : "text-gray-600 hover:text-blue-600"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
               }
             >
               Employees
@@ -39,9 +42,11 @@ const MainLayout = () => {
             <NavLink
               to="/attendance"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                  : "text-gray-600 hover:text-blue-600"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
               }
             >
               Attendance
@@ -52,9 +57,11 @@ const MainLayout = () => {
             <NavLink
               to="/leaves"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                  : "text-gray-600 hover:text-blue-600"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
               }
             >
               Leaves
@@ -66,9 +73,11 @@ const MainLayout = () => {
             <NavLink
               to="/reports"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                  : "text-gray-600 hover:text-blue-600"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
               }
             >
               Reports
@@ -79,16 +88,30 @@ const MainLayout = () => {
             <NavLink
               to="/profile"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                  : "text-gray-600 hover:text-blue-600"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
               }
             >
               My Profile
             </NavLink>
           )}
+        </nav>
 
-          <div className="ml-auto flex items-center gap-4">
+      </aside>
+
+      {/* Main Area */}
+      <div className="flex-1 flex flex-col">
+
+        {/* Header */}
+        <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
+          <h1 className="text-lg font-semibold text-gray-700">
+            Dashboard
+          </h1>
+
+          <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">{user.role}</span>
 
             <button
@@ -96,17 +119,19 @@ const MainLayout = () => {
                 logout();
                 navigate("/login");
               }}
-              className="px-3 py-1 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+              className="px-3 py-1 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
             >
               Logout
             </button>
           </div>
-        </div>
-      </nav>
+        </header>
 
-      <main className="max-w-7xl mx-auto p-6">
-        <Outlet />
-      </main>
+        {/* Page Content */}
+        <main className="flex-1 p-6 overflow-y-auto">
+          <Outlet />
+        </main>
+
+      </div>
     </div>
   );
 };

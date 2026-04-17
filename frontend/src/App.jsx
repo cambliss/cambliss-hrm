@@ -9,9 +9,12 @@ import Reports from "./pages/Reports";
 import Profile from "./pages/Profie";
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ChangePassword";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
+    <>
+    <Toaster position="top-right" />
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
@@ -73,6 +76,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 

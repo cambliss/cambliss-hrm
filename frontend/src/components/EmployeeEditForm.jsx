@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { updateEmployee } from "../api/employeeApi";
 import { createPortal } from "react-dom";
+import toast from "react-hot-toast";
 
 const EmployeeEditForm = ({ employee, onClose, refresh }) => {
   const [form, setForm] = useState({
@@ -13,6 +14,8 @@ const EmployeeEditForm = ({ employee, onClose, refresh }) => {
     employmentStatus: employee.employmentStatus,
   });
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -24,184 +27,159 @@ const EmployeeEditForm = ({ employee, onClose, refresh }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validate = () => {
+    if (!form.firstName || !form.role) {
+      toast.error("Required fields missing");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
+
     try {
+      setLoading(true);
+
       await updateEmployee(employee.id, {
         ...form,
         email: employee.email,
         joiningDate: employee.joiningDate,
       });
 
-      alert("Employee updated successfully");
+      toast.success("Employee updated successfully");
       refresh();
       onClose();
+
     } catch (err) {
-      alert("Unable to update employee");
+      toast.error("Unable to update employee");
+    } finally {
+      setLoading(false);
     }
   };
 
   return createPortal(
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-2xl border border-gray-200 
-                   w-full max-w-2xl max-h-[85vh]
-                   flex flex-col overflow-hidden"
-      >
-        
-        <div className="p-8 space-y-6 overflow-y-auto pr-3">
-          
-          <h3 className="text-xl font-semibold text-gray-800">
+
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 border-b">
+          <h3 className="text-lg font-semibold text-gray-800">
             Edit Employee
           </h3>
-
-          {/* Employee Code */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Employee Code
-            </label>
-            <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-500"
-              value={employee.employeeCode}
-              disabled
-            />
-          </div>
-
-          {/* First & Last Name */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                First Name
-              </label>
-              <input
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Last Name
-              </label>
-              <input
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Email
-            </label>
-            <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-500"
-              value={employee.email}
-              disabled
-            />
-          </div>
-
-          {/* Phone & Department */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Phone
-              </label>
-              <input
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Department
-              </label>
-              <input
-                name="department"
-                value={form.department}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Designation
-            </label>
-            <input
-              name="designation"
-              value={form.designation}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-          </div>
-
-          {/* Role & Status */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Role
-              </label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="EMPLOYEE">Employee</option>
-                <option value="MANAGER">Manager</option>
-                <option value="HR_ADMIN">HR Admin</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Employment Status
-              </label>
-              <select
-                name="employmentStatus"
-                value={form.employmentStatus}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="INACTIVE">INACTIVE</option>
-              </select>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-end gap-4 p-6 border-t bg-white">
           <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition"
-          >
-            Update
-          </button>
-
-          <button
-            type="button"
             onClick={onClose}
-            className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100 transition"
+            className="text-gray-400 hover:text-gray-600 text-lg"
           >
-            Cancel
+            ✕
           </button>
         </div>
 
-      </form>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-1 overflow-hidden"
+        >
 
+          <div className="p-6 space-y-6 overflow-y-auto">
+
+            {/* Employee Code */}
+            <div>
+              <label className="text-sm text-gray-600">Employee Code</label>
+              <input
+                className="w-full mt-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-gray-500"
+                value={employee.employeeCode}
+                disabled
+              />
+            </div>
+
+            {/* Fields Grid */}
+            <div className="grid grid-cols-2 gap-4">
+
+              {["firstName", "lastName", "phone", "department"].map((field) => (
+                <div key={field}>
+                  <label className="text-sm text-gray-600 capitalize">
+                    {field}
+                  </label>
+                  <input
+                    name={field}
+                    value={form[field]}
+                    onChange={handleChange}
+                    className="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+              ))}
+
+            </div>
+
+            {/* Designation */}
+            <div>
+              <label className="text-sm text-gray-600">Designation</label>
+              <input
+                name="designation"
+                value={form.designation}
+                onChange={handleChange}
+                className="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            {/* Role + Status */}
+            <div className="grid grid-cols-2 gap-4">
+
+              <div>
+                <label className="text-sm text-gray-600">Role</label>
+                <select
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="EMPLOYEE">Employee</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="HR_ADMIN">HR Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600">Status</label>
+                <select
+                  name="employmentStatus"
+                  value={form.employmentStatus}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </select>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end gap-3 p-4 border-t">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>,
     document.body
   );

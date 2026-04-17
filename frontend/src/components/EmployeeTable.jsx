@@ -1,59 +1,94 @@
+import { useState } from "react";
+
 const EmployeeTable = ({ employees, onEdit }) => {
+  const [search, setSearch] = useState("");
+
+  const filtered = employees.filter(emp =>
+    `${emp.firstName} ${emp.lastName}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <table className="w-full bg-white rounded shadow">
-      <thead className="bg-gray-50 border-b">
-        <tr>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Code</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Department</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Designation</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-        </tr>
-      </thead>
+    <div className="bg-white rounded-xl shadow-sm border p-4">
 
-      <tbody>
-        {employees.map(emp => (
-          <tr
-            key={emp.id}
-            className="border-b hover:bg-gray-50 transition"
-          >
-            <td className="px-4 py-3 text-gray-700">{emp.employeeCode}</td>
-            <td className="px-4 py-3 text-gray-700">
-              {emp.firstName} {emp.lastName}
-            </td>
-            <td className="px-4 py-3 text-gray-700">{emp.email}</td>
-            <td className="px-4 py-3 text-gray-700">{emp.department}</td>
-            <td className="px-4 py-3 text-gray-700">{emp.designation}</td>
-            <td className="px-4 py-3 text-gray-700">{emp.role}</td>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-semibold text-gray-700">
+          Employees
+        </h2>
 
-            <td className="px-4 py-3 text-gray-700">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  emp.employmentStatus === "ACTIVE"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {emp.employmentStatus}
-              </span>
-            </td>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="border px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-            <td className="px-4 py-3 text-gray-700">
-              <button
-                onClick={() => onEdit(emp)}
-                className="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition"
-              >
-                Edit
-              </button>
-            </td>
+      {/* Table */}
+      <table className="w-full text-sm">
+
+        <thead className="text-gray-500 border-b">
+          <tr>
+            <th className="py-3 text-left">Name</th>
+            <th className="py-3 text-left">Department</th>
+            <th className="py-3 text-left">Role</th>
+            <th className="py-3 text-left">Status</th>
+            <th className="py-3 text-left">Action</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          {filtered.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="text-center py-10 text-gray-400">
+                No employees found
+              </td>
+            </tr>
+          ) : (
+            filtered.map(emp => (
+              <tr key={emp.id} className="border-b hover:bg-gray-50">
+
+                <td className="py-3">
+                  <div className="font-medium text-gray-800">
+                    {emp.firstName} {emp.lastName}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {emp.email}
+                  </div>
+                </td>
+
+                <td className="py-3">{emp.department}</td>
+                <td className="py-3">{emp.role}</td>
+
+                <td className="py-3">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    emp.employmentStatus === "ACTIVE"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
+                  }`}>
+                    {emp.employmentStatus}
+                  </span>
+                </td>
+
+                <td className="py-3">
+                  <button
+                    onClick={() => onEdit(emp)}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Edit
+                  </button>
+                </td>
+
+              </tr>
+            ))
+          )}
+        </tbody>
+
+      </table>
+
     </div>
   );
 };
