@@ -15,33 +15,86 @@ const Profile = () => {
   }, [user]);
 
   if (!employee) {
-    return <p>Loading profile...</p>;
+    return (
+      <div className="bg-white p-10 rounded-xl shadow-sm border text-center text-gray-400">
+        Loading profile...
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-    <div className="max-w-xl bg-white p-6 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">
-        My Profile
-      </h1>
+    <div className="space-y-6">
 
-      <ProfileField label="Employee Code" value={employee.employeeCode} />
-      <ProfileField label="Name" value={`${employee.firstName} ${employee.lastName}`} />
-      <ProfileField label="Email" value={employee.email} />
-      <ProfileField label="Phone" value={employee.phone} />
-      <ProfileField label="Department" value={employee.department} />
-      <ProfileField label="Role" value={employee.role} />
-      <ProfileField label="Joining Date" value={employee.joiningDate} />
-      <ProfileField label="Status" value={employee.employmentStatus} />
-    </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">
+          My Profile
+        </h1>
+        <p className="text-gray-500 text-sm">
+          View your personal and employment details
+        </p>
+      </div>
+
+      {/* Profile Card */}
+      <div className="bg-white rounded-xl shadow-sm border p-6">
+
+        {/* Top Section */}
+        <div className="flex items-center gap-6 border-b pb-6">
+
+          {/* Avatar */}
+          <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold text-blue-600">
+            {employee.firstName?.charAt(0)}
+          </div>
+
+          {/* Basic Info */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {employee.firstName} {employee.lastName}
+            </h2>
+
+            <p className="text-sm text-gray-500 mt-1">
+              {employee.designation} • {employee.department}
+            </p>
+
+            <span
+              className={`inline-block mt-2 px-3 py-1 text-xs rounded-full font-medium ${
+                employee.employmentStatus === "ACTIVE"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {employee.employmentStatus}
+            </span>
+          </div>
+
+        </div>
+
+        {/* Details Grid */}
+        <div className="grid grid-cols-2 gap-6 mt-6">
+
+          <ProfileField label="Employee Code" value={employee.employeeCode} />
+          <ProfileField label="Email" value={employee.email} />
+
+          <ProfileField label="Phone" value={employee.phone || "-"} />
+          <ProfileField label="Role" value={employee.role} />
+
+          <ProfileField label="Department" value={employee.department} />
+          <ProfileField label="Joining Date" value={employee.joiningDate} />
+
+        </div>
+
+      </div>
+
     </div>
   );
 };
 
 const ProfileField = ({ label, value }) => (
-  <div className="mb-3">
-    <p className="text-sm text-gray-500">{label}</p>
-    <p className="font-medium text-gray-800">{value}</p>
+  <div>
+    <p className="text-xs text-gray-500 mb-1">{label}</p>
+    <p className="text-sm font-medium text-gray-800">
+      {value || "-"}
+    </p>
   </div>
 );
 
