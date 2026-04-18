@@ -3,6 +3,7 @@ import { getAllEmployees } from "../api/employeeApi";
 import EmployeeForm from "../components/EmployeeForm";
 import EmployeeTable from "../components/EmployeeTable";
 import EmployeeEditForm from "../components/EmployeeEditForm";
+import ModalPortal from "../components/ui/ModalPortal";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -86,22 +87,24 @@ const Employees = () => {
 
       {/* Add Employee Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+        <ModalPortal>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
 
-            <button
-              onClick={() => setShowForm(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
 
-            <EmployeeForm
-              refresh={loadEmployees}
-              onClose={() => setShowForm(false)}
-            />
+              <EmployeeForm
+                refresh={loadEmployees}
+                onClose={() => setShowForm(false)}
+              />
+            </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
 
       {/* Edit Modal */}

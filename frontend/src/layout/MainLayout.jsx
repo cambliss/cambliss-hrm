@@ -11,7 +11,7 @@ const MainLayout = () => {
   const permissions = ROLE_PERMISSIONS[user.role];
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
 
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r shadow-sm flex flex-col">
@@ -127,7 +127,7 @@ const MainLayout = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
 
