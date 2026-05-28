@@ -3,7 +3,6 @@ package hrms.hrms_backend.api.controllers;
 import hrms.hrms_backend.business.abstracts.AttendanceService;
 import hrms.hrms_backend.dataacceess.abstracts.AttendanceRepository;
 import hrms.hrms_backend.entities.concretes.Attendance;
-import hrms.hrms_backend.entities.enums.AttendanceStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +28,7 @@ public class AttendanceController {
         Attendance saved = attendanceService.markAttendance(
                 attendance.getEmployee().getId(),
                 attendance.getAttendanceDate(),
-                attendance.getStatus()
-        );
+                attendance.getStatus());
 
         return ResponseEntity.ok(saved);
     }
@@ -39,8 +37,7 @@ public class AttendanceController {
     @GetMapping("/{employeeId}")
     public ResponseEntity<?> getAttendance(@PathVariable Long employeeId) {
         return ResponseEntity.ok(
-                attendanceService.getAttendanceByEmployee(employeeId)
-        );
+                attendanceService.getAttendanceByEmployee(employeeId));
     }
 
     @PutMapping("/{attendanceId}")
@@ -51,8 +48,7 @@ public class AttendanceController {
         Attendance updated = attendanceService.updateAttendance(
                 attendanceId,
                 attendance.getAttendanceDate(),
-                attendance.getStatus()
-        );
+                attendance.getStatus());
 
         return ResponseEntity.ok(updated);
     }
@@ -63,7 +59,7 @@ public class AttendanceController {
             @RequestBody Attendance request) {
 
         Attendance updated = attendanceService.requestCorrection(
-                attendanceId, request.getRequestedStatus(), request.getCorrectionReason() );
+                attendanceId, request.getRequestedStatus(), request.getCorrectionReason());
 
         return ResponseEntity.ok(updated);
     }
