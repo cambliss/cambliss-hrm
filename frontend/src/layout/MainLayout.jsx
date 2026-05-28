@@ -27,10 +27,9 @@ const MainLayout = () => {
               to="/"
               end
               className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg text-sm font-medium ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-100"
                 }`
               }
             >
@@ -42,10 +41,9 @@ const MainLayout = () => {
             <NavLink
               to="/attendance"
               className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg text-sm font-medium ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-100"
                 }`
               }
             >
@@ -53,14 +51,25 @@ const MainLayout = () => {
             </NavLink>
           )}
 
+          <NavLink
+            to="/worklogs"
+            className={({ isActive }) =>
+              `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                ? "bg-blue-100 text-blue-600"
+                : "text-gray-600 hover:bg-gray-100"
+              }`
+            }
+          >
+            Work Logs
+          </NavLink>
+
           {permissions.leaves && (
             <NavLink
               to="/leaves"
               className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg text-sm font-medium ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-100"
                 }`
               }
             >
@@ -70,28 +79,26 @@ const MainLayout = () => {
 
           {(user.role === ROLES.HR_ADMIN ||
             user.role === ROLES.SUPER_ADMIN) && (
-            <NavLink
-              to="/reports"
-              className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg text-sm font-medium ${
-                  isActive
+              <NavLink
+                to="/reports"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
                     ? "bg-blue-100 text-blue-600"
                     : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              Reports
-            </NavLink>
-          )}
+                  }`
+                }
+              >
+                Reports
+              </NavLink>
+            )}
 
           {user.role === ROLES.EMPLOYEE && (
             <NavLink
               to="/profile"
               className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg text-sm font-medium ${
-                  isActive
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                `block px-4 py-2 rounded-lg text-sm font-medium ${isActive
+                  ? "bg-blue-100 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-100"
                 }`
               }
             >
