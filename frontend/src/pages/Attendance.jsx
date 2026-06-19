@@ -5,7 +5,10 @@ import { getAttendanceByEmployee } from "../api/attendanceApi";
 import { getAllEmployees } from "../api/employeeApi";
 import { useAuth } from "../context/AuthContext";
 import { ROLES } from "../config/roles";
+import { inputCls } from "../config/formStyles";
+import StatCard from "../components/ui/StatCard";
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 const Attendance = () => {
   const { user } = useAuth();
 
@@ -16,11 +19,9 @@ const Attendance = () => {
 
   const loadAttendance = async (empId) => {
     if (!empId) return;
-
     try {
       setLoading(true);
       setEmployeeId(empId);
-
       const res = await getAttendanceByEmployee(empId);
       setRecords(res.data);
     } finally {
@@ -36,83 +37,87 @@ const Attendance = () => {
     }
   }, []);
 
+  const presentCount = records.filter(r => r.status === "PRESENT").length;
+  const absentCount = records.filter(r => r.status === "ABSENT").length;
+
   return (
     <div className="space-y-6">
 
-      {/* Header */}
+      {/* ── Page header ── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
+        <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-1">
+          Management
+        </p>
+        <h1
+          className="text-2xl font-light text-[#0A0A0A] leading-tight"
+          style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}
+        >
           Attendance Management
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-xs text-[#AAAAAA] mt-1 tracking-wide">
           Track and manage attendance records
         </p>
       </div>
 
-      {/* Stats Cards */}
+      {/* ── Stat cards — visible once an employee is selected ── */}
       {employeeId && (
-        <div className="grid grid-cols-3 gap-6">
-          <div className="bg-white p-5 rounded-xl shadow-sm">
-            <p className="text-sm text-gray-500">Total Days</p>
-            <h2 className="text-2xl font-bold text-blue-600">
-              {records.length}
-            </h2>
-          </div>
-
-          <div className="bg-white p-5 rounded-xl shadow-sm">
-            <p className="text-sm text-gray-500">Present</p>
-            <h2 className="text-2xl font-bold text-green-600">
-              {records.filter(r => r.status === "PRESENT").length}
-            </h2>
-          </div>
-
-          <div className="bg-white p-5 rounded-xl shadow-sm">
-            <p className="text-sm text-gray-500">Absent</p>
-            <h2 className="text-2xl font-bold text-red-600">
-              {records.filter(r => r.status === "ABSENT").length}
-            </h2>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard label="Total Days" value={records.length} />
+          <StatCard label="Present" value={presentCount} accent />
+          <StatCard label="Absent" value={absentCount} muted />
         </div>
       )}
 
-      {/* Employee Selector */}
+      {/* ── Employee filter — HR / Admin only ── */}
       {user.role !== ROLES.EMPLOYEE && (
-        <div className="bg-white rounded-xl shadow-sm border p-6 flex items-center justify-between">
+        <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm overflow-hidden">
 
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700">
-              Employee Filter
-            </h3>
-            <p className="text-xs text-gray-500">
-              Select an employee to view attendance
+          <div className="px-5 py-4 border-b border-[#EBEBEB]">
+            <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-0.5">
+              Filter
             </p>
+            <h2
+              className="text-sm font-medium text-[#0A0A0A]"
+              style={{ fontFamily: "'Playfair Display', 'Georgia', serif", fontWeight: 400 }}
+            >
+              Select Employee
+            </h2>
           </div>
 
-          <select
-            value={employeeId || ""}
-            onChange={(e) => loadAttendance(e.target.value)}
-            className="w-72 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select Employee</option>
-            {employees.map(emp => (
-              <option key={emp.id} value={emp.id}>
-                {emp.employeeCode} - {emp.firstName}
-              </option>
-            ))}
-          </select>
+          <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center
+            justify-between gap-4">
+            <p className="text-xs text-[#AAAAAA] tracking-wide">
+              Choose an employee to load their attendance log.
+            </p>
+            <select
+              value={employeeId || ""}
+              onChange={(e) => loadAttendance(e.target.value)}
+              className={`${inputCls} sm:w-72`}
+            >
+              <option value="">Select employee…</option>
+              {employees.map(emp => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.employeeCode} — {emp.firstName} {emp.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
 
         </div>
       )}
 
-      {/* Employee Form */}
+      {/* ── Mark Attendance form — Employee role only ── */}
       {user.role === ROLES.EMPLOYEE && (
         <AttendanceForm refresh={loadAttendance} />
       )}
 
-      {/* Table */}
+      {/* ── Attendance table / loading ── */}
       {loading ? (
-        <div className="bg-white p-10 rounded-xl text-center text-gray-400">
-          Loading attendance...
+        <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm
+          py-16 text-center">
+          <p className="text-[10px] tracking-[0.25em] uppercase text-[#AAAAAA] animate-pulse">
+            Loading attendance…
+          </p>
         </div>
       ) : (
         <AttendanceTable
