@@ -2,10 +2,19 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { submitLeave } from "../api/leaveApi";
 import toast from "react-hot-toast";
+import { inputCls, textareaCls } from "../config/formStyles";
 
+// ── Label ─────────────────────────────────────────────────────────────────────
+const Label = ({ children, required = false }) => (
+  <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#666666] mb-1">
+    {children}
+    {required && <span className="ml-0.5 text-[#C9A227]">*</span>}
+  </label>
+);
+
+// ── Component ─────────────────────────────────────────────────────────────────
 const LeaveApplyForm = ({ refresh }) => {
   const { user } = useAuth();
-
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -16,10 +25,7 @@ const LeaveApplyForm = ({ refresh }) => {
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -32,7 +38,6 @@ const LeaveApplyForm = ({ refresh }) => {
 
     try {
       setLoading(true);
-
       await submitLeave({
         employee: { id: user.employeeId },
         leaveType: form.leaveType,
@@ -40,18 +45,9 @@ const LeaveApplyForm = ({ refresh }) => {
         endDate: form.endDate,
         reason: form.reason,
       });
-
       toast.success("Leave request submitted");
-
       refresh(user.employeeId);
-
-      setForm({
-        leaveType: "CASUAL",
-        startDate: "",
-        endDate: "",
-        reason: "",
-      });
-
+      setForm({ leaveType: "CASUAL", startDate: "", endDate: "", reason: "" });
     } catch (err) {
       toast.error(err.response?.data || "Error submitting leave");
     } finally {
@@ -60,80 +56,112 @@ const LeaveApplyForm = ({ refresh }) => {
   };
 
   return (
-    <form className="bg-white rounded-xl shadow-sm border p-6 space-y-6" onSubmit={handleSubmit}>
+    <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm overflow-hidden">
 
-      <div>
-        <h3 className="text-lg font-semibold text-gray-800">
-          Apply Leave
-        </h3>
-        <p className="text-sm text-gray-500">
-          Submit leave request for approval
+      {/* ── Card header ── */}
+      <div className="px-5 py-4 border-b border-[#EBEBEB]">
+        <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-0.5">
+          Leave
         </p>
+        <h2
+          className="text-sm font-medium text-[#0A0A0A]"
+          style={{ fontFamily: "'Playfair Display', 'Georgia', serif", fontWeight: 400 }}
+        >
+          Apply for Leave
+        </h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* ── Form body ── */}
+      <form onSubmit={handleSubmit} className="px-5 py-5 space-y-4">
 
-        <div>
-          <label className="text-sm text-gray-600">Leave Type</label>
-          <select
-            name="leaveType"
-            value={form.leaveType}
-            onChange={handleChange}
-            className="w-full mt-1 border rounded-lg px-3 py-2"
-          >
-            <option value="CASUAL">Casual</option>
-            <option value="SICK">Sick</option>
-            <option value="PAID">Paid</option>
-          </select>
+        {/* Leave type — half width */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Leave Type</Label>
+            <select
+              name="leaveType"
+              value={form.leaveType}
+              onChange={handleChange}
+              className={inputCls}
+            >
+              <option value="CASUAL">Casual</option>
+              <option value="SICK">Sick</option>
+              <option value="PAID">Paid</option>
+            </select>
+          </div>
         </div>
 
-        <div></div>
-
-        <div>
-          <label className="text-sm text-gray-600">Start Date</label>
-          <input
-            type="date"
-            name="startDate"
-            value={form.startDate}
-            onChange={handleChange}
-            className="w-full mt-1 border rounded-lg px-3 py-2"
-          />
+        {/* Date range */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label required>Start Date</Label>
+            <input
+              type="date"
+              name="startDate"
+              value={form.startDate}
+              onChange={handleChange}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <Label required>End Date</Label>
+            <input
+              type="date"
+              name="endDate"
+              value={form.endDate}
+              onChange={handleChange}
+              className={inputCls}
+            />
+          </div>
         </div>
 
+        {/* Reason — full width */}
         <div>
-          <label className="text-sm text-gray-600">End Date</label>
-          <input
-            type="date"
-            name="endDate"
-            value={form.endDate}
-            onChange={handleChange}
-            className="w-full mt-1 border rounded-lg px-3 py-2"
-          />
-        </div>
-
-        <div className="col-span-2">
-          <label className="text-sm text-gray-600">Reason</label>
+          <Label>Reason</Label>
           <textarea
             name="reason"
             value={form.reason}
             onChange={handleChange}
             rows={3}
-            className="w-full mt-1 border rounded-lg px-3 py-2"
+            placeholder="Briefly describe the reason for your leave…"
+            className={textareaCls}
           />
         </div>
 
-      </div>
+        {/* Required note */}
+        <p className="text-[9px] tracking-wide text-[#AAAAAA]">
+          Fields marked <span className="text-[#C9A227]">*</span> are required.
+        </p>
 
-      <div className="flex justify-end">
-        <button
-          disabled={loading}
-          className="bg-blue-600 text-white px-6 py-2.5 rounded-lg"
-        >
-          {loading ? "Submitting..." : "Submit Request"}
-        </button>
-      </div>
+        {/* ── Divider ── */}
+        <div className="border-t border-[#EBEBEB]" />
 
-    </form>
+        {/* ── Actions ── */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-md
+              text-[11px] font-semibold tracking-[0.15em] uppercase
+              bg-[#C9A227] hover:bg-[#E6B93A] active:bg-[#9B7A18]
+              text-[#0A0A0A] shadow-sm
+              disabled:opacity-40 disabled:cursor-not-allowed
+              transition-colors duration-150"
+          >
+            {loading ? (
+              <>
+                <span className="w-3 h-3 rounded-full border-2 border-[#0A0A0A]/30
+                  border-t-[#0A0A0A] animate-spin" />
+                Submitting…
+              </>
+            ) : (
+              "Submit Request"
+            )}
+          </button>
+        </div>
+
+      </form>
+    </div>
   );
 };
 
