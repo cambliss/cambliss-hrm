@@ -7,7 +7,18 @@ import {
   rejectCorrection,
 } from "../api/attendanceApi";
 import toast from "react-hot-toast";
+import { inputCls } from "../config/formStyles";
+import StatusBadge from "./ui/StatusBadge";
 
+// ── Column header ─────────────────────────────────────────────────────────────
+const Th = ({ children, className = "" }) => (
+  <th className={`px-5 py-3 text-left text-[10px] font-medium tracking-[0.2em]
+    uppercase text-[#666666] ${className}`}>
+    {children}
+  </th>
+);
+
+// ── Component ─────────────────────────────────────────────────────────────────
 const AttendanceTable = ({ records, refresh, employeeId }) => {
   const { user } = useAuth();
 
@@ -19,16 +30,11 @@ const AttendanceTable = ({ records, refresh, employeeId }) => {
 
   const isEmployee = user.role === ROLES.EMPLOYEE;
   const isHRorAdmin =
-    user.role === ROLES.HR_ADMIN ||
-    user.role === ROLES.SUPER_ADMIN;
+    user.role === ROLES.HR_ADMIN || user.role === ROLES.SUPER_ADMIN;
 
   const handleRequest = async () => {
     const { attendanceId, requestedStatus, reason } = correctionData;
-
-    if (!requestedStatus) {
-      toast.error("Select status");
-      return;
-    }
+    if (!requestedStatus) { toast.error("Select status"); return; }
 
     await requestCorrection(attendanceId, {
       requestedStatus,
@@ -36,193 +42,196 @@ const AttendanceTable = ({ records, refresh, employeeId }) => {
     });
 
     toast.success("Request submitted");
-
-    setCorrectionData({
-      attendanceId: null,
-      requestedStatus: "",
-      reason: "",
-    });
-
+    setCorrectionData({ attendanceId: null, requestedStatus: "", reason: "" });
     refresh(user.employeeId);
   };
 
+  const resetCorrection = () =>
+    setCorrectionData({ attendanceId: null, requestedStatus: "", reason: "" });
+
+  // ── Empty state ─────────────────────────────────────────────────────────────
   if (!records.length) {
     return (
-      <div className="bg-white p-6 rounded-xl text-gray-400 text-center">
-        No attendance records found
+      <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm
+        py-14 text-center">
+        <p className="text-xs tracking-wide text-[#AAAAAA]">
+          No attendance records found
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+    <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm overflow-hidden">
 
-      <table className="w-full text-sm">
+      {/* ── Card header ── */}
+      <div className="px-5 py-4 border-b border-[#EBEBEB]">
+        <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-0.5">
+          Records
+        </p>
+        <h2 className="text-sm font-medium text-[#0A0A0A]"
+          style={{ fontFamily: "'Playfair Display', 'Georgia', serif", fontWeight: 400 }}>
+          Attendance Log
+        </h2>
+      </div>
 
-        {/* HEADER */}
-        <thead className="bg-gray-50 border-b">
-          <tr className="text-gray-500 text-xs uppercase tracking-wider">
-            <th className="px-6 py-3 text-left">Date</th>
-            <th className="px-6 py-3 text-left">Status</th>
-            <th className="px-6 py-3 text-left">Requested</th>
-            <th className="px-6 py-3 text-left">Reason</th>
-            <th className="px-6 py-3 text-left">Action</th>
-          </tr>
-        </thead>
+      {/* ── Table ── */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
 
-        {/* BODY */}
-        <tbody>
-          {records.map((a) => (
-            <tr
-              key={a.id}
-              className="border-b hover:bg-gray-50 transition"
-            >
+          <thead>
+            <tr className="bg-[#F8F5EE] border-b border-[#EBEBEB]">
+              <Th className="pl-5">Date</Th>
+              <Th>Status</Th>
+              <Th>Requested</Th>
+              <Th>Reason</Th>
+              <Th>Action</Th>
+            </tr>
+          </thead>
 
-              {/* DATE */}
-              <td className="px-6 py-4 text-gray-700">
-                {a.attendanceDate}
-              </td>
+          <tbody className="divide-y divide-[#EBEBEB]">
+            {records.map((a) => (
+              <tr key={a.id}
+                className="hover:bg-[#F8F5EE] transition-colors duration-100">
 
-              {/* STATUS */}
-              <td className="px-6 py-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    a.status === "PRESENT"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {a.status}
-                </span>
-              </td>
+                {/* Date */}
+                <td className="px-5 py-3 pl-5 text-xs text-[#333333] tabular-nums">
+                  {a.attendanceDate}
+                </td>
 
-              {/* REQUESTED */}
-              <td className="px-6 py-4">
-                {a.requestedStatus ? (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                    {a.requestedStatus}
-                  </span>
-                ) : (
-                  <span className="text-gray-400">—</span>
-                )}
-              </td>
+                {/* Status */}
+                <td className="px-5 py-3">
+                  <StatusBadge status={a.status} />
+                </td>
 
-              {/* REASON */}
-              <td className="px-6 py-4 text-gray-600">
-                {a.correctionReason || "-"}
-              </td>
+                {/* Requested status */}
+                <td className="px-5 py-3">
+                  {a.requestedStatus
+                    ? <StatusBadge status={a.requestedStatus} />
+                    : <span className="text-[#AAAAAA] text-xs">—</span>
+                  }
+                </td>
 
-              {/* ACTION */}
-              <td className="px-6 py-4">
+                {/* Reason */}
+                <td className="px-5 py-3 text-xs text-[#666666] max-w-[180px] truncate">
+                  {a.correctionReason || <span className="text-[#AAAAAA]">—</span>}
+                </td>
 
-                {/* EMPLOYEE */}
-                {isEmployee && !a.requestedStatus && (
-                  <div>
-                    {correctionData.attendanceId === a.id ? (
-                      <div className="space-y-2">
+                {/* Action */}
+                <td className="px-5 py-3">
 
+                  {/* Employee: request correction */}
+                  {isEmployee && !a.requestedStatus && (
+                    correctionData.attendanceId === a.id ? (
+
+                      <div className="space-y-2 min-w-[160px]">
                         <select
-                          className="w-full border rounded-lg px-2 py-1 text-sm"
                           value={correctionData.requestedStatus}
-                          onChange={(e) =>
-                            setCorrectionData({
-                              ...correctionData,
-                              requestedStatus: e.target.value,
-                            })
-                          }
+                          onChange={(e) => setCorrectionData({
+                            ...correctionData, requestedStatus: e.target.value,
+                          })}
+                          className={inputCls}
                         >
-                          <option value="">Select</option>
+                          <option value="">Select status…</option>
                           <option value="PRESENT">Present</option>
                           <option value="ABSENT">Absent</option>
                         </select>
 
                         <input
                           type="text"
-                          placeholder="Reason"
-                          className="w-full border rounded-lg px-2 py-1 text-sm"
+                          placeholder="Reason (optional)"
                           value={correctionData.reason}
-                          onChange={(e) =>
-                            setCorrectionData({
-                              ...correctionData,
-                              reason: e.target.value,
-                            })
-                          }
+                          onChange={(e) => setCorrectionData({
+                            ...correctionData, reason: e.target.value,
+                          })}
+                          className={inputCls}
                         />
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 pt-0.5">
                           <button
                             onClick={handleRequest}
-                            className="text-blue-600 text-xs hover:underline"
+                            className="px-3 py-1.5 rounded-md text-[10px] font-semibold
+                              tracking-[0.15em] uppercase
+                              bg-[#C9A227] hover:bg-[#E6B93A] text-[#0A0A0A]
+                              transition-colors duration-150"
                           >
                             Submit
                           </button>
                           <button
-                            onClick={() =>
-                              setCorrectionData({
-                                attendanceId: null,
-                                requestedStatus: "",
-                                reason: "",
-                              })
-                            }
-                            className="text-gray-500 text-xs hover:underline"
+                            onClick={resetCorrection}
+                            className="px-3 py-1.5 rounded-md text-[10px] font-medium
+                              tracking-wide uppercase border border-[#EBEBEB]
+                              text-[#666666] hover:border-[#AAAAAA]
+                              transition-colors duration-150"
                           >
                             Cancel
                           </button>
                         </div>
-
                       </div>
+
                     ) : (
                       <button
-                        onClick={() =>
-                          setCorrectionData({
-                            attendanceId: a.id,
-                            requestedStatus: "",
-                            reason: "",
-                          })
-                        }
-                        className="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"
+                        onClick={() => setCorrectionData({
+                          attendanceId: a.id, requestedStatus: "", reason: "",
+                        })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5
+                          rounded-md text-[10px] font-medium tracking-wide uppercase
+                          border border-[#EBEBEB] text-[#666666]
+                          hover:border-[#C9A227] hover:text-[#C9A227]
+                          transition-colors duration-150"
                       >
                         Request
                       </button>
-                    )}
-                  </div>
-                )}
+                    )
+                  )}
 
-                {/* ADMIN */}
-                {isHRorAdmin && a.requestedStatus && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        approveCorrection(a.id).then(() =>
-                          refresh(employeeId)
-                        );
-                        toast.success("Approved");
-                      }}
-                      className="px-3 py-1 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100"
-                    >
-                      Approve
-                    </button>
+                  {/* HR / Admin: approve or reject */}
+                  {isHRorAdmin && a.requestedStatus && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          approveCorrection(a.id).then(() => refresh(employeeId));
+                          toast.success("Approved");
+                        }}
+                        className="px-3 py-1.5 rounded-md text-[10px] font-medium
+                          tracking-wide uppercase
+                          bg-[#F5E9C4] text-[#9B7A18]
+                          hover:bg-[#E6B93A]/30
+                          transition-colors duration-150"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => {
+                          rejectCorrection(a.id).then(() => refresh(employeeId));
+                          toast.error("Rejected");
+                        }}
+                        className="px-3 py-1.5 rounded-md text-[10px] font-medium
+                          tracking-wide uppercase
+                          bg-red-50 text-red-500
+                          hover:bg-red-100
+                          transition-colors duration-150"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
 
-                    <button
-                      onClick={() => {
-                        rejectCorrection(a.id).then(() =>
-                          refresh(employeeId)
-                        );
-                        toast.error("Rejected");
-                      }}
-                      className="px-3 py-1 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
 
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        </table>
+      </div>
 
-      </table>
+      {/* ── Footer count ── */}
+      <div className="px-5 py-3 border-t border-[#EBEBEB] bg-[#F8F5EE]">
+        <p className="text-[10px] text-[#AAAAAA] tracking-wide">
+          <span className="text-[#333333] font-medium">{records.length}</span> record{records.length !== 1 ? "s" : ""}
+        </p>
+      </div>
+
     </div>
   );
 };
