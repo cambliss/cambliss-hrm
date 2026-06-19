@@ -4,7 +4,68 @@ import EmployeeForm from "../components/EmployeeForm";
 import EmployeeTable from "../components/EmployeeTable";
 import EmployeeEditForm from "../components/EmployeeEditForm";
 import ModalPortal from "../components/ui/ModalPortal";
+import StatCard from "../components/ui/StatCard";
 
+// ── Plus icon ─────────────────────────────────────────────────────────────────
+const PlusIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+// ── Close icon ────────────────────────────────────────────────────────────────
+const CloseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+    aria-hidden="true">
+    <path d="M18 6L6 18M6 6l12 12" />
+  </svg>
+);
+
+// ── Modal shell ───────────────────────────────────────────────────────────────
+const Modal = ({ title, onClose, children }) => (
+  <ModalPortal>
+    <div className="fixed inset-0 bg-[#0A0A0A]/60 backdrop-blur-[2px]
+      flex items-center justify-center z-[999] px-4">
+      <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-xl
+        w-full max-w-lg relative overflow-hidden">
+
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-6 py-4
+          border-b border-[#EBEBEB]">
+          <div>
+            <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-0.5">
+              Employee
+            </p>
+            <h3 className="text-sm font-medium text-[#0A0A0A]"
+              style={{ fontFamily: "'Playfair Display', 'Georgia', serif", fontWeight: 400 }}>
+              {title}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="w-7 h-7 rounded-md flex items-center justify-center
+              text-[#AAAAAA] hover:text-[#333333] hover:bg-[#F8F5EE]
+              transition-colors duration-150"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* Modal body */}
+        <div className="px-6 py-5">
+          {children}
+        </div>
+
+      </div>
+    </div>
+  </ModalPortal>
+);
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [editingEmployee, setEditingEmployee] = useState(null);
@@ -27,56 +88,53 @@ const Employees = () => {
     loadEmployees();
   }, []);
 
+  const activeCount = employees.filter(e => e.employmentStatus === "ACTIVE").length;
+  const inactiveCount = employees.filter(e => e.employmentStatus !== "ACTIVE").length;
+
   return (
     <div className="space-y-6">
 
-      {/* Header + Button */}
-      <div className="flex justify-between items-center">
+      {/* ── Page header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <p className="text-[9px] font-medium tracking-[0.3em] uppercase text-[#C9A227] mb-1">
+            Management
+          </p>
+          <h1 className="text-2xl font-light text-[#0A0A0A] leading-tight"
+            style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
             Employee Management
           </h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-xs text-[#AAAAAA] mt-1 tracking-wide">
             Manage your workforce efficiently
           </p>
         </div>
 
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md
+            bg-[#C9A227] hover:bg-[#E6B93A] active:bg-[#9B7A18]
+            text-[#0A0A0A] text-xs font-semibold tracking-[0.15em] uppercase
+            shadow-sm transition-colors duration-150 shrink-0"
         >
-          + Add Employee
+          <PlusIcon />
+          Add Employee
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-white p-5 rounded-xl shadow-sm">
-          <p className="text-sm text-gray-500">Total Employees</p>
-          <h2 className="text-2xl font-bold text-blue-600">
-            {employees.length}
-          </h2>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow-sm">
-          <p className="text-sm text-gray-500">Active</p>
-          <h2 className="text-2xl font-bold text-green-500">
-            {employees.filter(e => e.employmentStatus === "ACTIVE").length}
-          </h2>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow-sm">
-          <p className="text-sm text-gray-500">Inactive</p>
-          <h2 className="text-2xl font-bold text-red-500">
-            {employees.filter(e => e.employmentStatus !== "ACTIVE").length}
-          </h2>
-        </div>
+      {/* ── Stat cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard label="Total Employees" value={employees.length} />
+        <StatCard label="Active" value={activeCount} accent />
+        <StatCard label="Inactive" value={inactiveCount} muted />
       </div>
 
-      {/* Loading State */}
+      {/* ── Table / loading ── */}
       {loading ? (
-        <div className="bg-white p-10 rounded-xl shadow-sm text-center text-gray-400">
-          Loading employees...
+        <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm
+          py-16 text-center">
+          <p className="text-[10px] tracking-[0.25em] uppercase text-[#AAAAAA] animate-pulse">
+            Loading employees…
+          </p>
         </div>
       ) : (
         <EmployeeTable
@@ -85,29 +143,17 @@ const Employees = () => {
         />
       )}
 
-      {/* Add Employee Modal */}
+      {/* ── Add employee modal ── */}
       {showForm && (
-        <ModalPortal>
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999]">
-            <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
-
-              <button
-                onClick={() => setShowForm(false)}
-                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-
-              <EmployeeForm
-                refresh={loadEmployees}
-                onClose={() => setShowForm(false)}
-              />
-            </div>
-          </div>
-        </ModalPortal>
+        <Modal title="Add Employee" onClose={() => setShowForm(false)}>
+          <EmployeeForm
+            refresh={loadEmployees}
+            onClose={() => setShowForm(false)}
+          />
+        </Modal>
       )}
 
-      {/* Edit Modal */}
+      {/* ── Edit employee modal ── */}
       {editingEmployee && (
         <EmployeeEditForm
           employee={editingEmployee}
