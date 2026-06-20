@@ -25,6 +25,13 @@ public class JwtFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
 
         String path = req.getRequestURI();
+        String method = req.getMethod();
+
+        // Allow CORS preflight requests
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         // Allow auth APIs without token
         if (path.startsWith("/api/auth")) {
@@ -42,7 +49,6 @@ public class JwtFilter implements Filter {
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
 
-                // Set authentication in Spring context
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 email,
@@ -54,18 +60,17 @@ public class JwtFilter implements Filter {
 
             } else {
                 HttpServletResponse res = (HttpServletResponse) response;
-
                 res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 res.getWriter().write("Invalid JWT Token");
                 return;
             }
         } else {
             HttpServletResponse res = (HttpServletResponse) response;
-
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             res.getWriter().write("Missing Authorization Header");
             return;
         }
+
         chain.doFilter(request, response);
     }
 }
